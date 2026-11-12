@@ -9,6 +9,21 @@ The workload is **Bookinfo**, Istio's official sample application
 (productpage → details / ratings / reviews v1–v3) — the standard learning
 application for Istio, used the same way in the official documentation.
 
+## Status
+
+Core mesh verified running on a local kind cluster — 12 November 2026:
+
+- Istio 1.24.0 (demo profile) installed — istiod and both gateways Ready (1/1)
+- Sidecar injection enabled on the `default` namespace — every Bookinfo pod
+  runs **2/2** (app container + Envoy sidecar), zero restarts
+- Bookinfo gateway and VirtualService applied — the product page loads
+  through the ingress gateway (see `docs/`)
+- Reviews traffic split configured — **80% v1 / 20% v3** (DestinationRule +
+  VirtualService in `manifests/reviews-split.yaml`)
+
+Still to do: apply and verify the strict mTLS policy, install the
+Kiali + Prometheus addons, and complete a full `verify.sh` pass.
+
 ## Architecture
 
 ```
