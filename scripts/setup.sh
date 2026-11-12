@@ -27,7 +27,10 @@ kubectl get namespace -L istio-injection
 echo "== 4/5 Deploy Bookinfo sample app =="
 kubectl apply -f "$ISTIO_HOME/samples/bookinfo/platform/kube/bookinfo.yaml"
 echo "waiting for Bookinfo pods (first image pulls can take a while)..."
-kubectl wait --for=condition=ready pod -l app=productpage -n default --timeout=600s
+# Wait on the deployment first: a bare `kubectl wait` on pods errors out with
+# "no matching resources found" if it runs before the pod object exists.
+kubectl rollout status deployment/productpage-v1 -n default --timeout=600s
+kubectl wait --for=condition=ready pod -l app=productpage -n default --timeout=120s
 kubectl get pods -n default
 
 echo "== 5/5 Gateway + VirtualService for outside access =="
