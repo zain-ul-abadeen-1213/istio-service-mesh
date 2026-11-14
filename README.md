@@ -11,18 +11,19 @@ application for Istio, used the same way in the official documentation.
 
 ## Status
 
-Core mesh verified running on a local kind cluster — 12 November 2026:
+**Core mesh verified running** — last checked 14 November 2026. This project is **not yet marked complete**: two closeout items below are still open.
 
-- Istio 1.24.0 (demo profile) installed — istiod and both gateways Ready (1/1)
-- Sidecar injection enabled on the `default` namespace — every Bookinfo pod
-  runs **2/2** (app container + Envoy sidecar), zero restarts
-- Bookinfo gateway and VirtualService applied — the product page loads
-  through the ingress gateway (see `docs/`)
-- Reviews traffic split configured — **80% v1 / 20% v3** (DestinationRule +
-  VirtualService in `manifests/reviews-split.yaml`)
+Verified:
+- kind cluster `zaintech` (3 nodes), Istio 1.24.0 demo profile, sidecar injection on the `default` namespace
+- Bookinfo running with sidecars (2/2); the product page is served through the Istio ingress gateway with HTTP 200 — see `docs/03-productpage-live.png` and `docs/05-gateway-http-200.png`
+- Reviews traffic split applied: 80% v1 / 20% v3 — visually checked over 10 page refreshes; both the no-stars (v1) and red-stars (v3) views observed
+- mTLS STRICT: PeerAuthentication `default` with mode `STRICT` on the default namespace — see `docs/04-mtls-strict.png`; the product page still returned HTTP 200 under STRICT, and a 200-request traffic run completed against it
+- Recovery note: on 14 Nov the cluster was revived after a host clock-drift fault (x509 "certificate is not yet valid"); the gateways and Bookinfo were restored with rollout restarts
 
-Still to do: apply and verify the strict mTLS policy, install the
-Kiali + Prometheus addons, and complete a full `verify.sh` pass.
+Still to do:
+- Kiali + Prometheus addons: install attempted 14 Nov, but the VM ran out of memory headroom and the Kubernetes API became unreachable under load — addon state is **unconfirmed**; the Kiali graph screenshot is still outstanding
+- `scripts/verify.sh`: the full 7-check suite has **not been run yet**
+- The final "Verified run" section will replace this Status once the two items above pass
 
 ## Architecture
 
